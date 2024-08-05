@@ -1,0 +1,42 @@
+<div class="flex">
+  <div class="h-screen w-80 z-10 sideBar">
+    <div class="flex flex-col justify-center items-center px-2">
+      <h3>your mode is {{ interactionType }}</h3>
+      <app-emoji-radio-input
+        [ngModel]="interactionType"
+        (ngModelChange)="setInteraction($event)"
+        [data]="this.interactionData"
+      ></app-emoji-radio-input>
+      @if (interactionType === 'draw') {
+      <app-emoji-radio-input
+        [(ngModel)]="geometryType"
+        (ngModelChange)="setGeometryType($event)"
+        [data]="this.geometryData"
+      ></app-emoji-radio-input>
+      } @if (interactionType === 'difference') {
+      <button class="btn btn-primary" (click)="difference()">Difference</button>
+      }
+    </div>
+  </div>
+
+  <div
+    class="w-screen h-screen"
+    id="map-container"
+    (click)="interactionType === 'info' && clickInfo($event)"
+  ></div>
+
+  <div #popup class="ol-popup">
+    @if (popupData) { @let name = popupData.name; @let area = popupData.area;
+    @if (name) {
+    <h3>{{ name }}</h3>
+    } @if (area) {
+    <h3>{{ area }}</h3>
+    } }
+
+    <select class="select select-bordered select-sm w-fit mt-3">
+      <option selected>Do not wanna visit</option>
+      <option>Want to visit</option>
+      <option>Visited</option>
+    </select>
+  </div>
+</div>

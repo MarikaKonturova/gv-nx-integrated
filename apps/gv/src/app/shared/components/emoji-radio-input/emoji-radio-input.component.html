@@ -1,0 +1,23 @@
+<div class="py-1">
+  @for (item of data; track item.value) {
+  <span
+    (click)="!!item.options ? writeValue(item.value) : onValueChanges($event)"
+    class="text-5xl"
+    [ngClass]="{ active: value === item.value && !item.options }"
+    [attr.data-value]="item.value"
+  >
+    {{ item.name }}
+  </span>
+  } @for (item of data; track item.value) { @if (item | isDisplayEmojiOptions:
+  value) { @for (itemOption of item.options; track $index) {
+  <div
+    (click)="onValueChanges($event)"
+    [attr.data-value]="itemOption.value"
+    [ngClass]="{
+            active: value === itemOption.value,
+          }"
+  >
+    {{ itemOption.name }}
+  </div>
+  } } }
+</div>

@@ -1,0 +1,38 @@
+<div class="w-screen h-screen flex justify-center items-center">
+  <div class="card glass w-96">
+    <div class="card-body items-center text-center">
+      <h2 class="card-title">GeoVacations project</h2>
+      <p>Are you ready to travel?</p>
+      <form
+        [formGroup]="form"
+        (ngSubmit)="onSubmit()"
+        class="py-4 flex flex-col justify-center items-center gap-3"
+      >
+        <label class="input input-bordered flex items-center gap-2">
+          <!-- <svg-icon src="assets/icons/email.svg"></svg-icon> -->
+          <input
+            type="text"
+            class="grow"
+            placeholder="Email"
+            formControlName="email"
+          />
+        </label>
+
+        <label class="input input-bordered flex items-center gap-2">
+          <!-- <svg-icon src="assets/icons/password.svg"></svg-icon> -->
+
+          <input
+            type="password"
+            class="grow"
+            formControlName="password"
+            value="password"
+          />
+        </label>
+        <div class="card-actions justify-end mt-2">
+          <button class="btn btn-primary" type="submit">Let's go</button>
+        </div>
+      </form>
+    </div>
+    {{ authService.currentUserSig() | json }}
+  </div>
+</div>
