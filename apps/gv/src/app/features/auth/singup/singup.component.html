@@ -1,3 +1,5 @@
+@let formDirty = form.dirty; @let formIsSubmitted = form.dirty;
+
 <div class="w-screen h-screen flex justify-center items-center">
   <div class="card glass w-96">
     <div class="card-body items-center text-center">
@@ -6,34 +8,63 @@
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <label class="input input-bordered flex items-center gap-2">
           <!-- <svg-icon src="assets/icons/email.svg"></svg-icon> -->
-          <input
-            type="text"
-            class="grow"
-            placeholder="Email"
-            formControlName="email"
-          />
+          <input type="text" class="grow" placeholder="Email" formControlName="email" />
         </label>
+
+        @let email = form.get('email'); @if(email?.invalid && email?.touched ){ @if (
+        email?.hasError('email') && !form.get('email')?.hasError('required') ) {
+        <p>Please enter a valid email address</p>
+        } @if (form.get('email')?.hasError('required')) {
+        <p>Email is required</p>
+        } }
+
         <label class="input input-bordered flex items-center gap-2">
           <!-- <svg-icon src="assets/icons/user.svg"></svg-icon> -->
-          <input
-            type="text"
-            class="grow"
-            placeholder="Username"
-            formControlName="userName"
-          />
+          <input type="text" class="grow" placeholder="Username" formControlName="userName" />
         </label>
-        <label class="input input-bordered flex items-center gap-2">
-          <!-- <svg-icon src="assets/icons/password.svg"></svg-icon> -->
 
-          <input
-            type="password"
-            class="grow"
-            value="password"
-            formControlName="password"
-          />
-        </label>
+        @let userName = form.get('userName'); @if(userName?.invalid && userName?.touched ){
+        @if(userName?.hasError('required')){
+        <p>username is required</p>
+        } }
+        <div formGroupName="passwords">
+          @let passwordsForm = form.get('passwords');
+          <label class="input input-bordered flex items-center gap-2">
+            <!-- <svg-icon src="assets/icons/password.svg"></svg-icon> -->
+            <input type="password" class="grow" placeholder="password" formControlName="password" />
+          </label>
+          @let password = passwordsForm?.get('password'); @if(password?.invalid &&
+          password?.touched){ @if(password?.hasError('passwordStrength') ) { @let errors =
+          password?.getError('passwordStrength'); @if(errors?.hasLowerCase){
+          <p>password should contain at least one lowerCase character</p>
+          } @else if(errors?.hasNumeric){
+          <p>password should contain at least one numeric character</p>
+          } @else if (errors?.hasUpperCase) {
+          <p>password should contain at least one upperCase character</p>
+          }}@else if(password?.hasError('minlength')) {
+          <p>The length of password should be at least 6 characters</p>
+          } @else if(password?.hasError('required')) {
+          <p>Password is required</p>
+          } } @let confirmPassword = passwordsForm?.get('confirmPassword');
+
+          <label class="input input-bordered flex items-center gap-2">
+            <!-- <svg-icon src="assets/icons/password.svg"></svg-icon> -->
+            <input
+              type="password"
+              class="grow"
+              placeholder="confirmPassword"
+              formControlName="confirmPassword" />
+          </label>
+          @if(passwordsForm?.hasError('passwordMatch') && password?.touched &&
+          confirmPassword?.touched){
+          <p>passwords should match</p>
+          }
+        </div>
+
         <div class="card-actions justify-end">
-          <button class="btn btn-primary" type="submit">Learn now!</button>
+          <button class="btn btn-primary" type="submit" [disabled]="form.status === 'INVALID'">
+            Go to vacation now!
+          </button>
         </div>
       </form>
     </div>

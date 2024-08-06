@@ -6,33 +6,21 @@
       <form
         [formGroup]="form"
         (ngSubmit)="onSubmit()"
-        class="py-4 flex flex-col justify-center items-center gap-3"
-      >
+        class="py-4 flex flex-col justify-center items-center gap-3">
         <label class="input input-bordered flex items-center gap-2">
           <!-- <svg-icon src="assets/icons/email.svg"></svg-icon> -->
-          <input
-            type="text"
-            class="grow"
-            placeholder="Email"
-            formControlName="email"
-          />
+          <input type="text" class="grow" placeholder="Email" formControlName="email" />
         </label>
 
         <label class="input input-bordered flex items-center gap-2">
           <!-- <svg-icon src="assets/icons/password.svg"></svg-icon> -->
 
-          <input
-            type="password"
-            class="grow"
-            formControlName="password"
-            value="password"
-          />
+          <input type="password" class="grow" formControlName="password" value="password" />
         </label>
         <div class="card-actions justify-end mt-2">
           <button class="btn btn-primary" type="submit">Let's go</button>
         </div>
       </form>
     </div>
-    {{ authService.currentUserSig() | json }}
   </div>
 </div>
