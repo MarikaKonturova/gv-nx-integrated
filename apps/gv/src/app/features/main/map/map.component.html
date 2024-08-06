@@ -9,7 +9,7 @@
       ></app-emoji-radio-input>
       @if (interactionType === 'draw') {
       <app-emoji-radio-input
-        [(ngModel)]="geometryType"
+        [ngModel]="geometryType"
         (ngModelChange)="setGeometryType($event)"
         [data]="this.geometryData"
       ></app-emoji-radio-input>

@@ -8,24 +8,16 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { difference } from '@turf/difference';
-import { featureCollection, polygon } from '@turf/helpers';
 import { Map, MapBrowserEvent, Overlay, View } from 'ol';
-import DrawHole from 'ol-ext/interaction/DrawHole';
 import Transform from 'ol-ext/interaction/Transform';
 import { MapboxVectorLayer } from 'ol-mapbox-style';
 import Feature, { FeatureLike } from 'ol/Feature';
-import formatGeoJSON from 'ol/format/GeoJSON';
 import MVT from 'ol/format/MVT';
-import { Circle, Polygon } from 'ol/geom';
 import { Type } from 'ol/geom/Geometry';
-import { fromCircle } from 'ol/geom/Polygon';
 import Draw from 'ol/interaction/Draw';
 import Link from 'ol/interaction/Link';
 import Modify from 'ol/interaction/Modify';
 import Select from 'ol/interaction/Select';
-import Snap from 'ol/interaction/Snap';
-import LayerGroup from 'ol/layer/Group.js';
 import Layer from 'ol/layer/Layer';
 import VectorLayer from 'ol/layer/Vector';
 import VectorTileLayer from 'ol/layer/VectorTile';
@@ -36,11 +28,13 @@ import VectorTileSource from 'ol/source/VectorTile';
 import { Fill, Stroke, Style } from 'ol/style.js';
 import CircleStyle from 'ol/style/Circle';
 
+import { environment } from '../../../../environments/environment';
+import { ToastService } from '../../../core/services/toast.service';
 import { Data } from '../../../shared/components/emoji-radio-input/data.interface';
 import { EmojiRadioInputComponent } from '../../../shared/components/emoji-radio-input/emoji-radio-input.component';
 import { MapService } from '../services/map.service';
 import { PopupData } from './interfaces/popup-data.interface';
-type interactionMap = Draw | Link | Modify | Select | Transform;
+export type InteractionsForMap = Draw | Link | Modify | Select | Transform;
 const highlightStyle = new Style({
   fill: new Fill({
     color: '#EEE',
@@ -60,9 +54,16 @@ const highlightStyle = new Style({
   templateUrl: './map.component.html',
 })
 export class MapComponent implements OnInit {
+  private differenceCollection: Feature[] = [];
+  private infoLayer!: VectorTileLayer;
+  private interactionsForMap: InteractionsForMap[] = [];
+  private interactiveLayer!: VectorLayer;
+  private mainLayer!: MapboxVectorLayer;
+  private map!: Map;
   private mapService = inject(MapService);
-  differenceCollection: Feature[] = [];
-  drawHole?: DrawHole;
+  private overlay!: Overlay;
+  private source!: VectorSource;
+  private toast = inject(ToastService);
   geometryData: Data[] = [
     {
       name: '',
@@ -75,7 +76,6 @@ export class MapComponent implements OnInit {
     },
   ];
   geometryType: Type = 'Polygon';
-  infoLayer!: VectorTileLayer;
   interactionData: Data[] = [
     {
       name: '🎨',
@@ -83,7 +83,6 @@ export class MapComponent implements OnInit {
         { name: 'transform', value: 'transform' },
         { name: 'draw', value: 'draw' },
         { name: 'modify', value: 'modify' },
-        { name: 'drawHole', value: 'drawHole' },
         { name: 'difference', value: 'difference' },
       ],
       value: 'edit',
@@ -94,18 +93,16 @@ export class MapComponent implements OnInit {
       value: 'info',
     },
   ];
-  interactionMap: interactionMap[] = [];
   interactionType = 'info';
-  interactiveLayer!: VectorLayer;
-  mainLayer!: MapboxVectorLayer;
-  map!: Map;
-  overlay!: Overlay;
   @ViewChild('popup', { static: true }) popup!: ElementRef;
   public popupData?: PopupData;
-  snap?: Snap;
-  source!: VectorSource;
 
-  transform?: Transform;
+  clearDifferenceCollection() {
+    this.differenceCollection.forEach((feature) => {
+      feature.setStyle(undefined);
+    });
+    this.differenceCollection = [];
+  }
 
   clickInfo(event: MouseEvent) {
     const evt = new MapBrowserEvent('click', this.map, event);
@@ -133,33 +130,28 @@ export class MapComponent implements OnInit {
       }
     }
   }
-
   closePopup() {
     this.overlay.setPosition(undefined);
   }
   difference() {
-    const turfPolygons = this.differenceCollection.map((feature) => {
-      this.interactiveLayer.getSource()?.removeFeature(feature);
-      const geometry = feature.getGeometry();
-
-      if (geometry?.getType() === 'LineString') {
-        // const polygonGeom = lineToPolygon(
-        // (geometry as LineString).getCoordinates()
-        // );
-        //return polygon(polygonGeom.getCoordinates());
-      }
-      if (geometry?.getType() === 'Circle') {
-        const polygonGeom = fromCircle(geometry as Circle);
-        return polygon(polygonGeom.getCoordinates());
-      }
-
-      return polygon((geometry as Polygon)?.getCoordinates());
-    });
-
-    const differenceads = difference(featureCollection(turfPolygons));
-    const feature = new formatGeoJSON().readFeature(differenceads);
-    this.differenceCollection = [];
-    this.interactiveLayer.getSource()?.addFeature(feature);
+    if (
+      this.mapService.isCollectionHasFeature(
+        this.differenceCollection,
+        'LineString'
+      )
+    ) {
+      this.toast.initiate({
+        content: 'you cannot difference selected drawings, try others',
+        title: 'Error',
+      });
+      this.clearDifferenceCollection();
+      return;
+    }
+    this.mapService.makeDifference(
+      this.differenceCollection,
+      this.interactiveLayer,
+      this.clearDifferenceCollection.bind(this)
+    );
   }
 
   ngOnInit() {
@@ -198,8 +190,7 @@ export class MapComponent implements OnInit {
       }),
     });
     this.mainLayer = new MapboxVectorLayer({
-      accessToken:
-        'pk.eyJ1IjoibWFyaWtha29udHVyb3ZhIiwiYSI6ImNsNHZmcmJxdDE4bGozanMzaTVjYjl0aGoifQ.XthjCSuRlsATknE03ADZTw',
+      accessToken: `${environment.mapBoxAccessToken}`,
       styleUrl: 'mapbox://styles/mapbox/bright-v9',
     });
     this.overlay = new Overlay({
@@ -211,6 +202,7 @@ export class MapComponent implements OnInit {
       element: this.popup.nativeElement,
     });
     this.map = new Map({
+      layers: [this.mainLayer, this.infoLayer, this.interactiveLayer],
       overlays: [this.overlay],
       target: 'map-container',
       view: new View({
@@ -219,10 +211,6 @@ export class MapComponent implements OnInit {
       }),
     });
 
-    const baseLayerGroup = new LayerGroup({
-      layers: [this.mainLayer, this.infoLayer, this.interactiveLayer],
-    });
-    this.map.addLayer(baseLayerGroup);
     this.map.addInteraction(new Link());
     this.map.once('loadstart', () => {
       this.map.getTargetElement().classList.add('spinner');
@@ -232,75 +220,34 @@ export class MapComponent implements OnInit {
     });
     this.setInteraction();
   }
-  setGeometryType(type?: Type) {
-    if (type) {
-      this.geometryType = type;
-    }
+  setGeometryType(geometryType: Type) {
+    this.geometryType = geometryType;
     this.setInteraction();
   }
-  setInteraction(type?: string) {
-    if (this.interactionMap.length > 0) {
-      this.interactionMap.forEach((interaction) => {
+  setInteraction(interactionType?: string) {
+    if (this.interactionsForMap.length > 0) {
+      this.interactionsForMap.forEach((interaction) => {
         this.map.removeInteraction(interaction);
       });
+      this.interactionsForMap = [];
     }
-    if (type) {
-      this.interactionType = type;
+    if (interactionType) {
+      this.interactionType = interactionType;
     }
     if (this.interactionType !== 'info') {
       this.closePopup();
     }
-    if (this.interactionType === 'draw') {
-      const drawInteraction = new Draw({
-        source: this.source,
-        type: this.geometryType,
-      });
-      this.interactionMap.push(drawInteraction);
-      this.map.addInteraction(drawInteraction);
-    }
-    if (this.interactionType === 'transform') {
-      this.transform = new Transform({
-        enableRotatedTransform: false,
-        features: this.source.getFeaturesCollection() || undefined,
-        layers: [this.interactiveLayer],
-        rotate: true,
-        scale: true,
-        stretch: true,
-        translate: true,
-        translateFeature: false,
-      });
-      this.interactionMap.push(this.transform);
-      this.map.addInteraction(this.transform);
-    }
-    if (this.interactionType === 'modify') {
-      const modify = new Modify({
-        source: this.source,
-      });
 
-      this.interactionMap.push(modify);
-      this.map.addInteraction(modify);
-    }
-    if (this.interactionType === 'drawHole') {
-      const drawHole = new DrawHole({
-        layers: [this.interactiveLayer],
-        type: 'Polygon',
-      });
-
-      this.interactionMap.push(drawHole);
-      this.map.addInteraction(drawHole);
-    }
+    const interaction = this.mapService.getInteraction(
+      this.interactiveLayer,
+      this.source,
+      this.geometryType,
+      this.interactionType
+    );
     if (this.interactionType === 'difference') {
-      const selectClick = new Select({
-        layers: [this.interactiveLayer],
-      });
-      selectClick.getFeatures().on('add', (e) => {
+      (interaction as Select).getFeatures().on('add', (e) => {
         const feature = e.element as Feature;
-        if (this.differenceCollection.length === 2) {
-          this.differenceCollection.forEach((feature) => {
-            feature.setStyle(undefined);
-          });
-          this.differenceCollection = [];
-        }
+
         const selIndex = this.differenceCollection.indexOf(feature);
         if (selIndex < 0) {
           this.differenceCollection.push(feature);
@@ -309,10 +256,15 @@ export class MapComponent implements OnInit {
           this.differenceCollection.splice(selIndex, 1);
           feature.setStyle(undefined);
         }
-        console.log(this.differenceCollection);
+
+        if (this.differenceCollection.length > 2) {
+          this.clearDifferenceCollection();
+        }
       });
-      this.interactionMap.push(selectClick);
-      this.map.addInteraction(selectClick);
+    }
+    if (interaction) {
+      this.interactionsForMap.push(interaction);
+      this.map.addInteraction(interaction);
     }
   }
 }

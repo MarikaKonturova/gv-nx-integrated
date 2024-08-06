@@ -1,56 +1,20 @@
 import { Injectable } from '@angular/core';
-import { Extent, getArea, getCenter, getHeight, getWidth } from 'ol/extent';
-import { Geometry, LineString, Point, Polygon } from 'ol/geom';
+import { difference, featureCollection, polygon } from '@turf/turf';
+import { Feature } from 'ol';
+import Transform from 'ol-ext/interaction/Transform';
+import { Extent, getArea } from 'ol/extent';
+import formatGeoJSON from 'ol/format/GeoJSON';
+import { Circle, Polygon } from 'ol/geom';
+import { Type } from 'ol/geom/Geometry';
+import { fromCircle } from 'ol/geom/Polygon';
+import Draw from 'ol/interaction/Draw';
+import Modify from 'ol/interaction/Modify';
+import Select from 'ol/interaction/Select';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
 
 @Injectable()
 export class MapService {
-  calculateCenter(origGeometry: Geometry) {
-    let center, coordinates, minRadius;
-    const type = origGeometry.getType();
-    if (type === 'Polygon') {
-      const geometry = origGeometry as Polygon;
-      let x = 0;
-      let y = 0;
-      let i = 0;
-      coordinates = geometry.getCoordinates()[0].slice(1);
-      coordinates.forEach(function (coordinate) {
-        x += coordinate[0];
-        y += coordinate[1];
-        i++;
-      });
-      center = [x / i, y / i];
-    } else if (type === 'LineString') {
-      const geometry = origGeometry as LineString;
-
-      center = geometry.getCoordinateAt(0.5);
-      coordinates = geometry.getCoordinates();
-    } else {
-      const geometry = origGeometry as Point;
-      center = getCenter(geometry.getExtent());
-    }
-    let sqDistances;
-    if (coordinates) {
-      sqDistances = coordinates.map(function (coordinate) {
-        const dx = coordinate[0] - center[0];
-        const dy = coordinate[1] - center[1];
-        return dx * dx + dy * dy;
-      });
-      //?? minRadius = Math.sqrt(Math.max.apply(Math, sqDistances)) / 3;
-      minRadius = Math.sqrt(Math.max(...sqDistances)) / 3;
-    } else {
-      minRadius =
-        Math.max(
-          getWidth(origGeometry.getExtent()),
-          getHeight(origGeometry.getExtent())
-        ) / 3;
-    }
-    return {
-      center: center,
-      coordinates: coordinates,
-      minRadius: minRadius,
-      sqDistances: sqDistances,
-    };
-  }
   formatArea(polygon: Extent) {
     const area = getArea(polygon);
     let output;
@@ -60,5 +24,80 @@ export class MapService {
       output = Math.round(area * 100) / 100 + ' ' + 'm\u00B2';
     }
     return output;
+  }
+  getInteraction(
+    layer: VectorLayer,
+    source: VectorSource,
+    geometryType: Type,
+    interactionType: string
+  ) {
+    switch (interactionType) {
+      case 'difference':
+        return new Select({
+          layers: [layer],
+        });
+      case 'draw':
+        return new Draw({
+          source: source,
+          type: geometryType,
+        });
+      case 'modify':
+        return new Modify({
+          source: source,
+        });
+      case 'trasform':
+        return new Transform({
+          enableRotatedTransform: false,
+          features: source.getFeaturesCollection() || undefined,
+          layers: [layer],
+          rotate: true,
+          scale: true,
+          stretch: true,
+          translate: true,
+          translateFeature: false,
+        });
+      default:
+        return null;
+    }
+  }
+
+  isCollectionHasFeature(differenceCollection: Feature[], featureType: string) {
+    return differenceCollection.some((feature) => {
+      return feature.getGeometry()?.getType() === featureType;
+    });
+  }
+  makeDifference(
+    differenceCollection: Feature[],
+    layer: VectorLayer,
+    cleanFuntionForCollection: () => void
+  ) {
+    const turfPolygons = this.makeTurfPolygons(differenceCollection, layer);
+    this.makeDifferenceBetweenTurfPolygons(
+      turfPolygons,
+      layer,
+      cleanFuntionForCollection
+    );
+  }
+  makeDifferenceBetweenTurfPolygons(
+    turfPolygons: ReturnType<typeof polygon>[],
+    layer: VectorLayer,
+    cleanFuntionForCollection: () => void
+  ) {
+    const differenceads = difference(featureCollection(turfPolygons));
+    const feature = new formatGeoJSON().readFeature(differenceads);
+    cleanFuntionForCollection();
+    layer.getSource()?.addFeature(feature);
+  }
+  makeTurfPolygons(differenceCollection: Feature[], layer: VectorLayer) {
+    return differenceCollection.map((feature) => {
+      layer.getSource()?.removeFeature(feature);
+      const geometry = feature.getGeometry();
+      if (geometry?.getType() === 'Circle') {
+        const polygonGeom = fromCircle(geometry as Circle);
+        return polygon(polygonGeom.getCoordinates());
+      }
+
+      return polygon((geometry as Polygon)?.getCoordinates());
+    });
   }
 }
