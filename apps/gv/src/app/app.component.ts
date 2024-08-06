@@ -10,9 +10,10 @@ import { RouterModule } from '@angular/router';
 import { pairwise } from 'rxjs';
 
 import { ThemeService } from './core/services/theme.service';
+import { ToastComponent } from './shared/components/toast/toast.component';
 
 @Component({
-  imports: [RouterModule],
+  imports: [RouterModule, ToastComponent],
   selector: 'app-root',
   standalone: true,
   styleUrl: './app.component.scss',
