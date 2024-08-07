@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { matchPasswordsValidator } from './validators/matchpasswords.validator';
-import { passwordStrengthValidator } from './validators/passwordStrength.validator';
+import { passwordStrengthValidator } from './validators/passwordstrength.validator';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -51,7 +51,6 @@ export class SingupComponent {
     this.authService.login(formToBackend).subscribe({
       error: error => {
         this.serverError.set(error.error.message);
-        this.cdr.markForCheck();
       },
       next: response => {
         this.authService.currentUserSig.set({

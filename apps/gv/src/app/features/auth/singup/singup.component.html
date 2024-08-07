@@ -8,31 +8,48 @@
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <label class="input input-bordered flex items-center gap-2">
           <!-- <svg-icon src="assets/icons/email.svg"></svg-icon> -->
-          <input type="text" class="grow" placeholder="Email" formControlName="email" />
+          <input
+            type="text"
+            class="grow"
+            placeholder="Email"
+            formControlName="email"
+            data-testId="email" />
         </label>
 
         @let email = form.get('email'); @if(email?.invalid && email?.touched ){ @if (
         email?.hasError('email') && !form.get('email')?.hasError('required') ) {
-        <p>Please enter a valid email address</p>
+        <p data-testid="email-valid">Please enter a valid email address</p>
         } @if (form.get('email')?.hasError('required')) {
-        <p>Email is required</p>
+        <p data-testid="email-required">Email is required</p>
         } }
 
         <label class="input input-bordered flex items-center gap-2">
           <!-- <svg-icon src="assets/icons/user.svg"></svg-icon> -->
-          <input type="text" class="grow" placeholder="Username" formControlName="userName" />
+          <input
+            type="text"
+            class="grow"
+            placeholder="Username"
+            formControlName="userName"
+            data-testId="userName" />
         </label>
 
         @let userName = form.get('userName'); @if(userName?.invalid && userName?.touched ){
         @if(userName?.hasError('required')){
-        <p>username is required</p>
+        <p data-testid="userName-required">username is required</p>
         } }
         <div formGroupName="passwords">
           @let passwordsForm = form.get('passwords');
           <label class="input input-bordered flex items-center gap-2">
             <!-- <svg-icon src="assets/icons/password.svg"></svg-icon> -->
-            <input type="password" class="grow" placeholder="password" formControlName="password" />
+            <input
+              type="password"
+              class="grow"
+              placeholder="password"
+              formControlName="password"
+              data-testId="password" />
           </label>
+
+          <!-- Pipe -->
           @let password = passwordsForm?.get('password'); @if(password?.invalid &&
           password?.touched){ @if(password?.hasError('passwordStrength') ) { @let errors =
           password?.getError('passwordStrength'); @if(errors?.hasLowerCase){
@@ -53,6 +70,7 @@
               type="password"
               class="grow"
               placeholder="confirmPassword"
+              data-testId="confirmPassword"
               formControlName="confirmPassword" />
           </label>
           @if(passwordsForm?.hasError('passwordMatch') && password?.touched &&
