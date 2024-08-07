@@ -1,8 +1,11 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { TitleCasePipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+
+import { ThemeService } from '../../../core/services/theme.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [],
+  imports: [TitleCasePipe],
   selector: 'app-theme-controller',
   standalone: true,
   template: `
@@ -11,48 +14,30 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
         Theme
         <!-- <svg-icon src="assets/icons/arrowDown.svg"></svg-icon> -->
       </div>
-      <ul
-        tabindex="0"
-        class="dropdown-content bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
-      >
+      <ul tabindex="0" class="dropdown-content bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+        @for(theme of themes; track theme){
         <li>
           <input
             type="radio"
             name="theme-dropdown"
             class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-            aria-label="Coffee"
-            value="coffee"
-          />
+            (click)="themeService.applyTheme(theme); selectedTheme = theme"
+            [attr.aria-label]="theme | titlecase"
+            [value]="theme"
+            [checked]="selectedTheme === theme" />
         </li>
-        <li>
-          <input
-            type="radio"
-            name="theme-dropdown"
-            class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-            aria-label="Retro"
-            value="retro"
-          />
-        </li>
-        <li>
-          <input
-            type="radio"
-            name="theme-dropdown"
-            class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-            aria-label="Autumn"
-            value="autumn"
-          />
-        </li>
-        <li>
-          <input
-            type="radio"
-            name="theme-dropdown"
-            class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-            aria-label="Forest"
-            value="forest"
-          />
-        </li>
+        }
       </ul>
     </div>
   `,
 })
-export class ThemeControllerComponent {}
+export class ThemeControllerComponent implements OnInit {
+  selectedTheme!: string;
+  themes = ['coffee', 'retro', 'autumn', 'forest'];
+  themeService = inject(ThemeService);
+  ngOnInit() {
+    console.log(this.themeService.getInitialTheme());
+    this.selectedTheme = this.themeService.getInitialTheme();
+    console.log(this.selectedTheme);
+  }
+}

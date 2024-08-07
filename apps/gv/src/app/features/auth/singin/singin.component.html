@@ -18,7 +18,9 @@
           <input type="password" class="grow" formControlName="password" value="password" />
         </label>
         <div class="card-actions justify-end mt-2">
-          <button class="btn btn-primary" type="submit">Let's go</button>
+          <button class="btn btn-primary" type="submit" [disabled]="form.status === 'INVALID'">
+            Let's go
+          </button>
         </div>
       </form>
     </div>

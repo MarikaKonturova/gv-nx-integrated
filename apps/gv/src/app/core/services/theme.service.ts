@@ -11,6 +11,6 @@ export class ThemeService {
     localStorage.setItem('theme', theme);
   }
   getInitialTheme(): string {
-    return localStorage.getItem('theme') || 'forest';
+    return localStorage.getItem('theme') || 'coffee';
   }
 }

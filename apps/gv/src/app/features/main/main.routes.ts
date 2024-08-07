@@ -6,8 +6,7 @@ export const mainRoutes: Routes = [
   {
     children: [
       {
-        loadComponent: () =>
-          import('./map/map.component').then((c) => c.MapComponent),
+        loadComponent: () => import('./map/map.component').then(c => c.MapComponent),
         path: '',
       },
     ],

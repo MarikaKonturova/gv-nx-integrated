@@ -1,10 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  inject,
-  OnInit,
-  Renderer2,
-} from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, Renderer2 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterModule } from '@angular/router';
 import { pairwise } from 'rxjs';
@@ -16,7 +10,6 @@ import { ToastComponent } from './shared/components/toast/toast.component';
   imports: [RouterModule, ToastComponent],
   selector: 'app-root',
   standalone: true,
-  styleUrl: './app.component.scss',
   templateUrl: './app.component.html',
 })
 export class AppComponent implements OnInit {

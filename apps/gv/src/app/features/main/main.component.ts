@@ -7,9 +7,10 @@ import { ThemeControllerComponent } from '../../shared/components/theme-controll
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NavbarComponent, ThemeControllerComponent, RouterOutlet],
-  selector: 'app-main',
   standalone: true,
-  template: ` <app-navbar />
-    <router-outlet />`,
+  template: `
+    <app-navbar />
+    <router-outlet />
+  `,
 })
 export class MainComponent {}

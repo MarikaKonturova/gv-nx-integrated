@@ -19,7 +19,6 @@ import { AuthService } from '../../../core/services/auth.service';
   templateUrl: './singin.component.html',
 })
 export class SinginComponent {
-  private cdr = inject(ChangeDetectorRef);
   private fb = inject(FormBuilder);
   private router = inject(Router);
   public authService = inject(AuthService);
@@ -30,11 +29,10 @@ export class SinginComponent {
   serverError = signal<string>('');
   onSubmit(): void {
     this.authService.login(this.form.getRawValue()).subscribe({
-      error: (error) => {
+      error: error => {
         this.serverError.set(error.error.message);
-        this.cdr.markForCheck();
       },
-      next: (response) => {
+      next: response => {
         this.authService.currentUserSig.set({
           email: response.user.email,
           id: response.user.id,

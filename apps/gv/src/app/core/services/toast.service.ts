@@ -1,20 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
-export const TOAST_TYPES = {
-  error: 'error',
-  success: 'success',
-} as const;
-type ObjectValues<T> = T[keyof T];
-type ToastTypes = ObjectValues<typeof TOAST_TYPES>;
-
-export interface ToastData {
-  content: string;
-  progressWidth?: string;
-  show?: boolean;
-  title: string;
-  type?: ToastTypes;
-}
+import { TOAST_TYPES, ToastData } from '../models/toast.model';
 
 @Injectable({
   providedIn: 'root',
