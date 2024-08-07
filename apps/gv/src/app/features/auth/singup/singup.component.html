@@ -48,21 +48,10 @@
               formControlName="password"
               data-testId="password" />
           </label>
-
-          <!-- Pipe -->
-          @let password = passwordsForm?.get('password'); @if(password?.invalid &&
-          password?.touched){ @if(password?.hasError('passwordStrength') ) { @let errors =
-          password?.getError('passwordStrength'); @if(errors?.hasLowerCase){
-          <p>password should contain at least one lowerCase character</p>
-          } @else if(errors?.hasNumeric){
-          <p>password should contain at least one numeric character</p>
-          } @else if (errors?.hasUpperCase) {
-          <p>password should contain at least one upperCase character</p>
-          }}@else if(password?.hasError('minlength')) {
-          <p>The length of password should be at least 6 characters</p>
-          } @else if(password?.hasError('required')) {
-          <p>Password is required</p>
-          } } @let confirmPassword = passwordsForm?.get('confirmPassword');
+          @let password = passwordsForm?.get('password'); @if(password && password.invalid &&
+          password.touched){
+          <p>{{ password.errors | passwordsErrors }}</p>
+          } @let confirmPassword = passwordsForm?.get('confirmPassword');
 
           <label class="input input-bordered flex items-center gap-2">
             <!-- <svg-icon src="assets/icons/password.svg"></svg-icon> -->

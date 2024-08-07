@@ -1,4 +1,3 @@
-import { JsonPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -10,19 +9,19 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { AuthService } from '../../../core/services/auth.service';
+import { PasswordsErrorsPipe } from './pipes/passwordsErrors.pipe';
 import { matchPasswordsValidator } from './validators/matchpasswords.validator';
 import { passwordStrengthValidator } from './validators/passwordstrength.validator';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, JsonPipe],
+  imports: [PasswordsErrorsPipe, ReactiveFormsModule],
   selector: 'app-singup',
   standalone: true,
   templateUrl: './singup.component.html',
 })
 export class SingupComponent {
   private authService = inject(AuthService);
-  private cdr = inject(ChangeDetectorRef);
   private fb = inject(FormBuilder);
   private router = inject(Router);
   form = this.fb.nonNullable.group({
