@@ -15,7 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@gv": ["apps/gv"]
+      "@gv": ["apps/gv/src/app"]
     }
   },
   "exclude": ["node_modules", "tmp"]

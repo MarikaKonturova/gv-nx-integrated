@@ -1,10 +1,4 @@
-import {
-  animate,
-  state,
-  style,
-  transition,
-  trigger,
-} from '@angular/animations';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -18,8 +12,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { interval, Subject, takeUntil, takeWhile } from 'rxjs';
-
-import { ToastService } from '../../../core/services/toast.service';
+import { ToastService } from 'src/app/core/services/toast.service';
 @Component({
   animations: [
     trigger('openClose', [
@@ -52,7 +45,7 @@ export class ToastComponent implements OnInit {
 
   @ViewChild('element') progressBar!: ElementRef;
   toastService = inject(ToastService);
-
+  // RENDERER2
   countDown() {
     this.destroy$ = new Subject();
     const progressBar = this.progressBar.nativeElement;
@@ -83,13 +76,14 @@ export class ToastComponent implements OnInit {
 
   ngOnInit() {
     this.toastService.open.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (data) => {
+      next: data => {
         if (data.show) {
           this.countDown();
         }
       },
     });
   }
+
   stopCountDown() {
     this.destroy$.next();
     this.destroy$.complete();

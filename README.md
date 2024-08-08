@@ -64,3 +64,8 @@ It will show tasks that you can run with Nx.
 ### toRead
 
 - [custom icons](https://medium.com/@borjamrd1/how-to-use-custom-svg-icons-in-your-angular-aplication-152be44237b6)
+
+## to Do
+
+- [test auth servie w/ mocking http](https://angular.dev/guide/testing/services#testing-http-services)
+  [pt2](https://angular.dev/guide/http/testing)

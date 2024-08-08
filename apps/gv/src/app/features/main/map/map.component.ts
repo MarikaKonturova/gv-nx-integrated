@@ -8,6 +8,10 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ToastService } from '@app/core/services/toast.service';
+import { environment } from '@app/environments/environment';
+import { Data } from '@app/shared/components/emoji-radio-input/data.interface';
+import { EmojiRadioInputComponent } from '@app/shared/components/emoji-radio-input/emoji-radio-input.component';
 import { Map, MapBrowserEvent, Overlay, View } from 'ol';
 import Transform from 'ol-ext/interaction/Transform';
 import { MapboxVectorLayer } from 'ol-mapbox-style';
@@ -28,10 +32,6 @@ import VectorTileSource from 'ol/source/VectorTile';
 import { Fill, Stroke, Style } from 'ol/style.js';
 import CircleStyle from 'ol/style/Circle';
 
-import { environment } from '../../../../environments/environment';
-import { ToastService } from '../../../core/services/toast.service';
-import { Data } from '../../../shared/components/emoji-radio-input/data.interface';
-import { EmojiRadioInputComponent } from '../../../shared/components/emoji-radio-input/emoji-radio-input.component';
 import { MapService } from '../services/map.service';
 import { PopupData } from './interfaces/popup-data.interface';
 export type InteractionsForMap = Draw | Link | Modify | Select | Transform;
@@ -98,7 +98,7 @@ export class MapComponent implements OnInit {
   public popupData?: PopupData;
 
   clearDifferenceCollection() {
-    this.differenceCollection.forEach((feature) => {
+    this.differenceCollection.forEach(feature => {
       feature.setStyle(undefined);
     });
     this.differenceCollection = [];
@@ -134,12 +134,7 @@ export class MapComponent implements OnInit {
     this.overlay.setPosition(undefined);
   }
   difference() {
-    if (
-      this.mapService.isCollectionHasFeature(
-        this.differenceCollection,
-        'LineString'
-      )
-    ) {
+    if (this.mapService.isCollectionHasFeature(this.differenceCollection, 'LineString')) {
       this.toast.initiate({
         content: 'you cannot difference selected drawings, try others',
         title: 'Error',
@@ -164,7 +159,9 @@ export class MapComponent implements OnInit {
           'ne:ne_10m_admin_0_countries@EPSG%3A900913@pbf/{z}/{x}/{-y}.pbf',
       }),
     });
+
     this.source = new VectorSource();
+
     this.interactiveLayer = new VectorLayer({
       source: this.source,
       style: new Style({
@@ -173,9 +170,7 @@ export class MapComponent implements OnInit {
         }),
         geometry: function (feature) {
           const modifyGeometry = feature.get('modifyGeometry');
-          return modifyGeometry
-            ? modifyGeometry.geometry
-            : feature.getGeometry();
+          return modifyGeometry ? modifyGeometry.geometry : feature.getGeometry();
         },
         image: new CircleStyle({
           fill: new Fill({
@@ -189,10 +184,12 @@ export class MapComponent implements OnInit {
         }),
       }),
     });
+
     this.mainLayer = new MapboxVectorLayer({
       accessToken: `${environment.mapBoxAccessToken}`,
       styleUrl: 'mapbox://styles/mapbox/bright-v9',
     });
+
     this.overlay = new Overlay({
       autoPan: {
         animation: {
@@ -212,9 +209,11 @@ export class MapComponent implements OnInit {
     });
 
     this.map.addInteraction(new Link());
+
     this.map.once('loadstart', () => {
       this.map.getTargetElement().classList.add('spinner');
     });
+
     this.map.once('loadend', () => {
       this.map.getTargetElement().classList.remove('spinner');
     });
@@ -226,7 +225,7 @@ export class MapComponent implements OnInit {
   }
   setInteraction(interactionType?: string) {
     if (this.interactionsForMap.length > 0) {
-      this.interactionsForMap.forEach((interaction) => {
+      this.interactionsForMap.forEach(interaction => {
         this.map.removeInteraction(interaction);
       });
       this.interactionsForMap = [];
@@ -245,7 +244,7 @@ export class MapComponent implements OnInit {
       this.interactionType
     );
     if (this.interactionType === 'difference') {
-      (interaction as Select).getFeatures().on('add', (e) => {
+      (interaction as Select).getFeatures().on('add', e => {
         const feature = e.element as Feature;
 
         const selIndex = this.differenceCollection.indexOf(feature);
