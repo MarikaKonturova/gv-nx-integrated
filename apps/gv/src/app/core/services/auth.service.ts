@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '@gv/environments/environment';
 
-import { UserInterface } from '../models/user.inteface';
+import { UserInterface } from '../interfaces/user.inteface';
 
 @Injectable({
   providedIn: 'root',

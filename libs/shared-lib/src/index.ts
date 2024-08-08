@@ -1,1 +1,2 @@
-export * from './lib/shared-lib/shared-lib.component';
+export * from './lib/toast/toast.component';
+export * from './services/toast.service';

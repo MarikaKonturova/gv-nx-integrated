@@ -36,10 +36,6 @@ export class ThemeControllerComponent implements OnInit {
   themes = ['coffee', 'retro', 'autumn', 'forest'];
   themeService = inject(ThemeService);
   ngOnInit() {
-    console.log(this.themeService.getInitialTheme());
-
     this.selectedTheme = this.themeService.getInitialTheme();
-
-    console.log(this.selectedTheme);
   }
 }

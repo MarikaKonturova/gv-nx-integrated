@@ -11,8 +11,9 @@ import {
   ViewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ToastService } from '@gv/core/services/toast.service';
 import { interval, Subject, takeUntil, takeWhile } from 'rxjs';
+
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   animations: [
@@ -35,7 +36,7 @@ import { interval, Subject, takeUntil, takeWhile } from 'rxjs';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
-  selector: 'app-toast',
+  selector: 'lib-toast',
   standalone: true,
   templateUrl: './toast.component.html',
 })

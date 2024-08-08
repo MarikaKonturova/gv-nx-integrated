@@ -1,8 +1,7 @@
 <div
   (mouseenter)="stopCountDown()"
   class="rounded-sm bg-white fixed bottom-[24px] right-[40px] min-w-[380px] max-w-[420px] break-words z-[999] border border-transparent"
-  [@openClose]="toastService.data && toastService.data.show ? 'open' : 'closed'"
->
+  [@openClose]="toastService.data && toastService.data.show ? 'open' : 'closed'">
   <div class="relative px-6 py-4">
     <div class="flex" *ngIf="toastService.data">
       <div class="toast_content">
@@ -21,6 +20,5 @@
     [ngClass]="{
       'bg-green-500': toastService.data && toastService.data.type === 'success'
     }"
-    #element
-  ></div>
+    #element></div>
 </div>

@@ -17,7 +17,7 @@
     "paths": {
       "@gv/environments/*": ["apps/gv/src/environments/*"],
       "@gv/*": ["apps/gv/src/app/*"],
-      "@gv-lib/shared-lib": ["libs/shared-lib/src/index.ts"]
+      "@gv-lib/shared-lib/*": ["libs/shared-lib/src/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

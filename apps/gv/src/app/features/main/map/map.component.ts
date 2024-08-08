@@ -8,7 +8,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ToastService } from '@gv/core/services/toast.service';
+import { ToastService } from '@gv-lib/shared-lib/services/toast.service';
 import { environment } from '@gv/environments/environment';
 import { Data } from '@gv/shared/components/emoji-radio-input/data.interface';
 import { EmojiRadioInputComponent } from '@gv/shared/components/emoji-radio-input/emoji-radio-input.component';
