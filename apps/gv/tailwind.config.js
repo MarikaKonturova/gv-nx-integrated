@@ -15,11 +15,11 @@ module.exports = {
       {
         autumn: {
           ...require('daisyui/src/theming/themes')['autumn'],
-          '.active':{
-            textShadow:' #000 1px 0 12px'
+          '.active': {
+            textShadow: ' #000 1px 0 12px',
           },
-          '.sideBar':{
-            backgroundColor: 'oklch(0.958147 0 0)'
+          '.sideBar': {
+            backgroundColor: 'oklch(0.958147 0 0)',
           },
           '.outer-container': {
             position: 'absolute',
@@ -68,10 +68,25 @@ module.exports = {
             transform: 'translateX(-90%) translateY(70%)',
           },
         },
+        coffee: {
+          ...require('daisyui/src/theming/themes')['coffee'],
+          '.sideBar': {
+            backgroundColor: 'oklch(0.216758 0.023072 329.709)',
+          },
+        },
+        retro: {
+          ...require('daisyui/src/theming/themes')['retro'],
+          '.sideBar': {
+            backgroundColor: 'oklch(0.916374 0.034554 90.5158)',
+          },
+        },
+        forest: {
+          ...require('daisyui/src/theming/themes')['forest'],
+          '.sideBar': {
+            backgroundColor: 'oklch(0.188409 0.00829 17.9116)',
+          },
+        },
       },
-      'coffee',
-      'retro',
-      'forest',
     ],
     darkMode: ['class', '[data-theme="forest"]'],
   },
