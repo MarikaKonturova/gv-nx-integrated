@@ -19,13 +19,16 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     const initialTheme = this.themeService.getInitialTheme();
+
     this.themeService.applyTheme(initialTheme);
+
     this.renderer.addClass(document.body, initialTheme);
 
     this.themeService.theme$
       .pipe(pairwise(), takeUntilDestroyed(this.destroyRef))
       .subscribe(([prevTheme, newTheme]) => {
         this.renderer.removeClass(document.body, prevTheme);
+
         this.renderer.addClass(document.body, newTheme);
       });
   }

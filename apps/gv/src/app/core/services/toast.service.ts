@@ -12,6 +12,7 @@ export class ToastService {
 
   hide() {
     this.data = { ...this.data, show: false };
+
     this.open.next(this.data);
   }
 
@@ -19,7 +20,9 @@ export class ToastService {
     if (data.type) {
       this.data.type = TOAST_TYPES.error;
     }
+
     this.data = { ...data, progressWidth: '100%', show: true };
+
     this.open.next(this.data);
   }
 }

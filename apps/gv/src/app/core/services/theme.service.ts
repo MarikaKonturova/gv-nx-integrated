@@ -8,6 +8,7 @@ export class ThemeService {
   theme$ = new BehaviorSubject<string>('');
   applyTheme(theme: string) {
     this.theme$.next(theme);
+
     localStorage.setItem('theme', theme);
   }
   getInitialTheme(): string {

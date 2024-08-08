@@ -18,11 +18,13 @@ export class MapService {
   formatArea(polygon: Extent) {
     const area = getArea(polygon);
     let output;
+
     if (area > 10000) {
       output = Math.round((area / 1000000) * 100) / 100 + ' ' + 'km\u00B2';
     } else {
       output = Math.round(area * 100) / 100 + ' ' + 'm\u00B2';
     }
+
     return output;
   }
   getInteraction(
@@ -62,7 +64,7 @@ export class MapService {
   }
 
   isCollectionHasFeature(differenceCollection: Feature[], featureType: string) {
-    return differenceCollection.some((feature) => {
+    return differenceCollection.some(feature => {
       return feature.getGeometry()?.getType() === featureType;
     });
   }
@@ -72,11 +74,8 @@ export class MapService {
     cleanFuntionForCollection: () => void
   ) {
     const turfPolygons = this.makeTurfPolygons(differenceCollection, layer);
-    this.makeDifferenceBetweenTurfPolygons(
-      turfPolygons,
-      layer,
-      cleanFuntionForCollection
-    );
+
+    this.makeDifferenceBetweenTurfPolygons(turfPolygons, layer, cleanFuntionForCollection);
   }
   makeDifferenceBetweenTurfPolygons(
     turfPolygons: ReturnType<typeof polygon>[],
@@ -85,15 +84,19 @@ export class MapService {
   ) {
     const differenceads = difference(featureCollection(turfPolygons));
     const feature = new formatGeoJSON().readFeature(differenceads);
+
     cleanFuntionForCollection();
+
     layer.getSource()?.addFeature(feature);
   }
   makeTurfPolygons(differenceCollection: Feature[], layer: VectorLayer) {
-    return differenceCollection.map((feature) => {
+    return differenceCollection.map(feature => {
       layer.getSource()?.removeFeature(feature);
       const geometry = feature.getGeometry();
+
       if (geometry?.getType() === 'Circle') {
         const polygonGeom = fromCircle(geometry as Circle);
+
         return polygon(polygonGeom.getCoordinates());
       }
 

@@ -34,6 +34,7 @@ import CircleStyle from 'ol/style/Circle';
 
 import { MapService } from '../services/map.service';
 import { PopupData } from './interfaces/popup-data.interface';
+
 export type InteractionsForMap = Draw | Link | Modify | Select | Transform;
 const highlightStyle = new Style({
   fill: new Fill({
@@ -44,6 +45,7 @@ const highlightStyle = new Style({
     width: 2,
   }),
 });
+
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgClass, EmojiRadioInputComponent, FormsModule],
@@ -101,6 +103,7 @@ export class MapComponent implements OnInit {
     this.differenceCollection.forEach(feature => {
       feature.setStyle(undefined);
     });
+
     this.differenceCollection = [];
   }
 
@@ -112,20 +115,24 @@ export class MapComponent implements OnInit {
         if (layer == this.infoLayer || layer == this.interactiveLayer) {
           return feature;
         }
+
         return null;
       }
     );
+
     if (feature) {
       const geometry = feature.getGeometry();
 
       if (geometry) {
         const formattedArea = this.mapService.formatArea(geometry.getExtent());
+
         this.popupData = {
           area: formattedArea,
           name: feature.get('name'),
         };
 
         const coordinate = evt.coordinate;
+
         this.overlay.setPosition(coordinate);
       }
     }
@@ -139,9 +146,12 @@ export class MapComponent implements OnInit {
         content: 'you cannot difference selected drawings, try others',
         title: 'Error',
       });
+
       this.clearDifferenceCollection();
+
       return;
     }
+
     this.mapService.makeDifference(
       this.differenceCollection,
       this.interactiveLayer,
@@ -170,6 +180,7 @@ export class MapComponent implements OnInit {
         }),
         geometry: function (feature) {
           const modifyGeometry = feature.get('modifyGeometry');
+
           return modifyGeometry ? modifyGeometry.geometry : feature.getGeometry();
         },
         image: new CircleStyle({
@@ -198,6 +209,7 @@ export class MapComponent implements OnInit {
       },
       element: this.popup.nativeElement,
     });
+
     this.map = new Map({
       layers: [this.mainLayer, this.infoLayer, this.interactiveLayer],
       overlays: [this.overlay],
@@ -217,10 +229,12 @@ export class MapComponent implements OnInit {
     this.map.once('loadend', () => {
       this.map.getTargetElement().classList.remove('spinner');
     });
+
     this.setInteraction();
   }
   setGeometryType(geometryType: Type) {
     this.geometryType = geometryType;
+
     this.setInteraction();
   }
   setInteraction(interactionType?: string) {
@@ -228,11 +242,14 @@ export class MapComponent implements OnInit {
       this.interactionsForMap.forEach(interaction => {
         this.map.removeInteraction(interaction);
       });
+
       this.interactionsForMap = [];
     }
+
     if (interactionType) {
       this.interactionType = interactionType;
     }
+
     if (this.interactionType !== 'info') {
       this.closePopup();
     }
@@ -243,16 +260,20 @@ export class MapComponent implements OnInit {
       this.geometryType,
       this.interactionType
     );
+
     if (this.interactionType === 'difference') {
       (interaction as Select).getFeatures().on('add', e => {
         const feature = e.element as Feature;
 
         const selIndex = this.differenceCollection.indexOf(feature);
+
         if (selIndex < 0) {
           this.differenceCollection.push(feature);
+
           feature.setStyle(highlightStyle);
         } else {
           this.differenceCollection.splice(selIndex, 1);
+
           feature.setStyle(undefined);
         }
 
@@ -261,8 +282,10 @@ export class MapComponent implements OnInit {
         }
       });
     }
+
     if (interaction) {
       this.interactionsForMap.push(interaction);
+
       this.map.addInteraction(interaction);
     }
   }

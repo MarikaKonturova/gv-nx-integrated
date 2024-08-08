@@ -10,16 +10,20 @@ export class PasswordsErrorsPipe implements PipeTransform {
     if (passwordErrors?.['required']) {
       return 'Password is required.';
     }
+
     if (passwordErrors?.['minlength']) {
       return 'The length of the password should be at least 6 characters.';
     }
+
     if (passwordErrors?.['passwordStrength']) {
       if (passwordErrors['passwordStrength'].hasLowerCase) {
         return 'Password should contain at least one lowercase character.';
       }
+
       if (passwordErrors['passwordStrength'].hasNumeric) {
         return 'Password should contain at least one numeric character.';
       }
+
       if (passwordErrors['passwordStrength'].hasUpperCase) {
         return 'Password should contain at least one uppercase character.';
       }

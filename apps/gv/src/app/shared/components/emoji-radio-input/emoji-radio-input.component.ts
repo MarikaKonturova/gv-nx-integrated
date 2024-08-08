@@ -1,11 +1,5 @@
 import { NgClass } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  forwardRef,
-  Input,
-  Provider,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, forwardRef, Input, Provider } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { Data } from './data.interface';
@@ -34,7 +28,9 @@ export class EmojiRadioInputComponent implements ControlValueAccessor {
   public onValueChanges(event: Event): void {
     const targetDivElement = event.target as HTMLDivElement;
     const content = targetDivElement.getAttribute('data-value') as string;
+
     this.value = content;
+
     this.onChange(content);
   }
 

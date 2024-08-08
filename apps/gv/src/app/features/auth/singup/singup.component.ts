@@ -52,6 +52,7 @@ export class SingupComponent {
           id: response.user.id,
           username: response.user.username,
         });
+
         this.router.navigateByUrl('/');
       },
     });

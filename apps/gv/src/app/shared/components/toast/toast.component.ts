@@ -13,6 +13,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { interval, Subject, takeUntil, takeWhile } from 'rxjs';
 import { ToastService } from 'src/app/core/services/toast.service';
+
 @Component({
   animations: [
     trigger('openClose', [
@@ -50,6 +51,7 @@ export class ToastComponent implements OnInit {
     this.destroy$ = new Subject();
     const progressBar = this.progressBar.nativeElement;
     const toastServiceData = this.toastService.data;
+
     progressBar.style.width = toastServiceData.progressWidth;
     let width = parseInt(progressBar.style.width, 10);
 
@@ -58,17 +60,21 @@ export class ToastComponent implements OnInit {
         takeUntil(this.destroy$),
         takeWhile(() => {
           width = parseInt(progressBar.style.width, 10);
+
           return width > 0;
         })
       )
       .subscribe({
         complete: () => {
           this.toastService.hide();
+
           this.cdr.markForCheck();
         },
         next: () => {
           toastServiceData.progressWidth = String(width - 2);
+
           progressBar.style.width = toastServiceData.progressWidth + '%';
+
           this.cdr.markForCheck();
         },
       });
@@ -86,6 +92,7 @@ export class ToastComponent implements OnInit {
 
   stopCountDown() {
     this.destroy$.next();
+
     this.destroy$.complete();
   }
 }
