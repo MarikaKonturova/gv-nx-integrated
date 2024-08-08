@@ -1,10 +1,10 @@
 import { Component, DestroyRef, inject, OnInit, Renderer2 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterModule } from '@angular/router';
-import { ThemeService } from '@app/core/services/theme.service';
-import { ToastComponent } from '@app/shared/components/toast/toast.component';
 import { pairwise } from 'rxjs';
 
+import { ThemeService } from './core/services/theme.service';
+import { ToastComponent } from './shared/components/toast/toast.component';
 @Component({
   imports: [RouterModule, ToastComponent],
   selector: 'app-root',

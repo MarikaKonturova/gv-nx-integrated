@@ -11,8 +11,8 @@ import {
   ViewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ToastService } from '@gv/core/services/toast.service';
 import { interval, Subject, takeUntil, takeWhile } from 'rxjs';
-import { ToastService } from 'src/app/core/services/toast.service';
 
 @Component({
   animations: [

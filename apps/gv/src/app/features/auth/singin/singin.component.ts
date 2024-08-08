@@ -2,7 +2,7 @@ import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '@app/core/services/auth.service';
+import { AuthService } from '@gv/core/services/auth.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

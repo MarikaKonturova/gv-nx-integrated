@@ -8,10 +8,10 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ToastService } from '@app/core/services/toast.service';
-import { environment } from '@app/environments/environment';
-import { Data } from '@app/shared/components/emoji-radio-input/data.interface';
-import { EmojiRadioInputComponent } from '@app/shared/components/emoji-radio-input/emoji-radio-input.component';
+import { ToastService } from '@gv/core/services/toast.service';
+import { environment } from '@gv/environments/environment';
+import { Data } from '@gv/shared/components/emoji-radio-input/data.interface';
+import { EmojiRadioInputComponent } from '@gv/shared/components/emoji-radio-input/emoji-radio-input.component';
 import { Map, MapBrowserEvent, Overlay, View } from 'ol';
 import Transform from 'ol-ext/interaction/Transform';
 import { MapboxVectorLayer } from 'ol-mapbox-style';

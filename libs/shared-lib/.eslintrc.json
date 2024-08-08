@@ -10,7 +10,7 @@
           "error",
           {
             "type": "attribute",
-            "prefix": "app",
+            "prefix": "lib",
             "style": "camelCase"
           }
         ],
@@ -18,17 +18,23 @@
           "error",
           {
             "type": "element",
-            "prefix": "app",
+            "prefix": "lib",
             "style": "kebab-case"
           }
         ]
       }
     },
-
     {
       "files": ["*.html"],
       "extends": ["plugin:@nx/angular-template"],
       "rules": {}
+    },
+    {
+      "files": ["*.json"],
+      "parser": "jsonc-eslint-parser",
+      "rules": {
+        "@nx/dependency-checks": "error"
+      }
     }
   ]
 }

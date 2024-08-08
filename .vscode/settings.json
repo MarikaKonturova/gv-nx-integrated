@@ -18,10 +18,5 @@
     "titleBar.inactiveBackground": "#0c33f599",
     "titleBar.inactiveForeground": "#e7e7e799"
   },
-  "peacock.color": "#0c33f5",
-
-  "eslint.workingDirectories": [
-    { "pattern": "./apps/*/" },
-    { "pattern": "./packages/*/" }
-  ]
+  "peacock.color": "#0c33f5"
 }

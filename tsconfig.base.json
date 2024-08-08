@@ -15,7 +15,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@gv": ["apps/gv/src/app"]
+      "@gv/environments/*": ["apps/gv/src/environments/*"],
+      "@gv/*": ["apps/gv/src/app/*"],
+      "@gv-lib/shared-lib": ["libs/shared-lib/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
