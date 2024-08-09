@@ -1,7 +1,7 @@
 const { FlatCompat } = require('@eslint/eslintrc');
 const nxEslintPlugin = require('@nx/eslint-plugin');
 const eslintPluginPerfectionist = require('eslint-plugin-perfectionist');
-const eslintPluginExample = require("./eslint-plugin-example");
+const eslintPluginCustom = require("./eslint-rules/eslint-plugin-custom");
 const js = require('@eslint/js');
 
 const compat = new FlatCompat({
@@ -14,7 +14,7 @@ module.exports = [
     plugins: {
       '@nx': nxEslintPlugin,
       perfectionist: eslintPluginPerfectionist,
-      "example": eslintPluginExample
+      "custom": eslintPluginCustom
     },
   },
   {
@@ -92,7 +92,7 @@ module.exports = [
         },
       ],
       '@typescript-eslint/no-unused-vars': 'error',
-      "example/enforce-foo-bar": "error",
+      "custom/new-line-before-subscribe": "error",
     },
   },
   ...compat

@@ -15,7 +15,7 @@ import { EmojiRadioInputComponent } from '@gv/shared/components/emoji-radio-inpu
 import { Map, MapBrowserEvent, Overlay, View } from 'ol';
 import Transform from 'ol-ext/interaction/Transform';
 import { MapboxVectorLayer } from 'ol-mapbox-style';
-import Feature, { FeatureLike } from 'ol/Feature';
+import { FeatureLike } from 'ol/Feature';
 import MVT from 'ol/format/MVT';
 import { Type } from 'ol/geom/Geometry';
 import Draw from 'ol/interaction/Draw';
@@ -36,15 +36,6 @@ import { MapService } from '../services/map.service';
 import { PopupData } from './interfaces/popup-data.interface';
 
 export type InteractionsForMap = Draw | Link | Modify | Select | Transform;
-const highlightStyle = new Style({
-  fill: new Fill({
-    color: '#EEE',
-  }),
-  stroke: new Stroke({
-    color: '#3399CC',
-    width: 2,
-  }),
-});
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -56,7 +47,6 @@ const highlightStyle = new Style({
   templateUrl: './map.component.html',
 })
 export class MapComponent implements OnInit {
-  private differenceCollection: Feature[] = [];
   private infoLayer!: VectorTileLayer;
   private interactionsForMap: InteractionsForMap[] = [];
   private interactiveLayer!: VectorLayer;
@@ -99,14 +89,6 @@ export class MapComponent implements OnInit {
   @ViewChild('popup', { static: true }) popup!: ElementRef;
   public popupData?: PopupData;
 
-  clearDifferenceCollection() {
-    this.differenceCollection.forEach(feature => {
-      feature.setStyle(undefined);
-    });
-
-    this.differenceCollection = [];
-  }
-
   clickInfo(event: MouseEvent) {
     const evt = new MapBrowserEvent('click', this.map, event);
     const feature = this.map.forEachFeatureAtPixel(
@@ -141,22 +123,18 @@ export class MapComponent implements OnInit {
     this.overlay.setPosition(undefined);
   }
   difference() {
-    if (this.mapService.isCollectionHasFeature(this.differenceCollection, 'LineString')) {
+    if (this.mapService.isCollectionHasFeature('LineString')) {
       this.toast.initiate({
         content: 'you cannot difference selected drawings, try others',
         title: 'Error',
       });
 
-      this.clearDifferenceCollection();
+      this.mapService.clearDifferenceCollection();
 
       return;
     }
 
-    this.mapService.makeDifference(
-      this.differenceCollection,
-      this.interactiveLayer,
-      this.clearDifferenceCollection.bind(this)
-    );
+    this.mapService.makeDifference(this.interactiveLayer);
   }
 
   ngOnInit() {
@@ -260,28 +238,6 @@ export class MapComponent implements OnInit {
       this.geometryType,
       this.interactionType
     );
-
-    if (this.interactionType === 'difference') {
-      (interaction as Select).getFeatures().on('add', e => {
-        const feature = e.element as Feature;
-
-        const selIndex = this.differenceCollection.indexOf(feature);
-
-        if (selIndex < 0) {
-          this.differenceCollection.push(feature);
-
-          feature.setStyle(highlightStyle);
-        } else {
-          this.differenceCollection.splice(selIndex, 1);
-
-          feature.setStyle(undefined);
-        }
-
-        if (this.differenceCollection.length > 2) {
-          this.clearDifferenceCollection();
-        }
-      });
-    }
 
     if (interaction) {
       this.interactionsForMap.push(interaction);

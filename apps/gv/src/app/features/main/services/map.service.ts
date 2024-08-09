@@ -12,9 +12,29 @@ import Modify from 'ol/interaction/Modify';
 import Select from 'ol/interaction/Select';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
+import Fill from 'ol/style/Fill';
+import Stroke from 'ol/style/Stroke';
+import Style from 'ol/style/Style';
+const highlightStyle = new Style({
+  fill: new Fill({
+    color: '#EEE',
+  }),
+  stroke: new Stroke({
+    color: '#3399CC',
+    width: 2,
+  }),
+});
 
 @Injectable()
 export class MapService {
+  differenceCollection: Feature[] = [];
+  clearDifferenceCollection() {
+    this.differenceCollection.forEach(feature => {
+      feature.setStyle(undefined);
+    });
+
+    this.differenceCollection = [];
+  }
   formatArea(polygon: Extent) {
     const area = getArea(polygon);
     let output;
@@ -34,10 +54,34 @@ export class MapService {
     interactionType: string
   ) {
     switch (interactionType) {
-      case 'difference':
-        return new Select({
+      case 'difference': {
+        const select = new Select({
           layers: [layer],
         });
+
+        select.getFeatures().on('add', e => {
+          const feature = e.element as Feature;
+
+          const selIndex = this.differenceCollection.indexOf(feature);
+
+          if (selIndex < 0) {
+            this.differenceCollection.push(feature);
+
+            feature.setStyle(highlightStyle);
+          } else {
+            this.differenceCollection.splice(selIndex, 1);
+
+            feature.setStyle(undefined);
+          }
+
+          if (this.differenceCollection.length > 2) {
+            this.clearDifferenceCollection();
+          }
+        });
+
+        return select;
+      }
+
       case 'draw':
         return new Draw({
           source: source,
@@ -63,34 +107,29 @@ export class MapService {
     }
   }
 
-  isCollectionHasFeature(differenceCollection: Feature[], featureType: string) {
-    return differenceCollection.some(feature => {
+  isCollectionHasFeature(featureType: string) {
+    return this.differenceCollection.some(feature => {
       return feature.getGeometry()?.getType() === featureType;
     });
   }
-  makeDifference(
-    differenceCollection: Feature[],
-    layer: VectorLayer,
-    cleanFuntionForCollection: () => void
-  ) {
-    const turfPolygons = this.makeTurfPolygons(differenceCollection, layer);
+  makeDifference(layer: VectorLayer) {
+    const turfPolygons = this.makeTurfPolygons(layer);
 
-    this.makeDifferenceBetweenTurfPolygons(turfPolygons, layer, cleanFuntionForCollection);
+    this.makeDifferenceBetweenTurfPolygons(turfPolygons, layer);
   }
   makeDifferenceBetweenTurfPolygons(
     turfPolygons: ReturnType<typeof polygon>[],
-    layer: VectorLayer,
-    cleanFuntionForCollection: () => void
+    layer: VectorLayer
   ) {
     const differenceads = difference(featureCollection(turfPolygons));
     const feature = new formatGeoJSON().readFeature(differenceads);
 
-    cleanFuntionForCollection();
+    this.clearDifferenceCollection();
 
     layer.getSource()?.addFeature(feature);
   }
-  makeTurfPolygons(differenceCollection: Feature[], layer: VectorLayer) {
-    return differenceCollection.map(feature => {
+  makeTurfPolygons(layer: VectorLayer) {
+    return this.differenceCollection.map(feature => {
       layer.getSource()?.removeFeature(feature);
       const geometry = feature.getGeometry();
 

@@ -1,6 +1,6 @@
 /**
  * @fileoverview Rule to require a newline before `.subscribe`
- * @author Your Name
+ * @author Marmar
  */
 'use strict';
 
