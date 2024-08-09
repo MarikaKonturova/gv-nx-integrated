@@ -21,7 +21,8 @@ export class SinginComponent {
   });
   serverError = signal<string>('');
   onSubmit(): void {
-    this.authService.login(this.form.getRawValue()).subscribe({
+    this.authService.login(this.form.getRawValue())
+		.subscribe({
       error: error => {
         this.serverError.set(error.error.message);
       },

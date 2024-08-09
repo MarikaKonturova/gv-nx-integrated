@@ -42,7 +42,8 @@ export class SingupComponent {
       password: form.passwords.password,
     };
 
-    this.authService.login(formToBackend).subscribe({
+    this.authService.login(formToBackend)
+		.subscribe({
       error: error => {
         this.serverError.set(error.error.message);
       },

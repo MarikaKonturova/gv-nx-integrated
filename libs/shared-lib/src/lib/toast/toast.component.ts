@@ -82,7 +82,8 @@ export class ToastComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.toastService.open.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.toastService.open.pipe(takeUntilDestroyed(this.destroyRef))
+		.subscribe({
       next: data => {
         if (data.show) {
           this.countDown();
@@ -93,7 +94,6 @@ export class ToastComponent implements OnInit {
 
   stopCountDown() {
     this.destroy$.next();
-
     this.destroy$.complete();
   }
 }
