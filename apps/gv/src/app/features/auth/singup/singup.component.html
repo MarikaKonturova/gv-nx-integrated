@@ -16,10 +16,10 @@
             data-testId="email" />
         </label>
 
-        @let email = form.get('email'); @if(email?.invalid && email?.touched ){ @if (
-        email?.hasError('email') && !form.get('email')?.hasError('required') ) {
+        @let email = form.controls['email']; @if(email?.invalid && email?.touched ){ @if (
+        email.errors?.['email'] && !email.errors?.['required'] ) {
         <p data-testid="email-valid">Please enter a valid email address</p>
-        } @if (form.get('email')?.hasError('required')) {
+        } @if (email.errors?.['required']) {
         <p data-testid="email-required">Email is required</p>
         } }
 
@@ -33,12 +33,12 @@
             data-testId="userName" />
         </label>
 
-        @let userName = form.get('userName'); @if(userName?.invalid && userName?.touched ){
-        @if(userName?.hasError('required')){
+        @let userName = form.controls['userName']; @if(userName?.invalid && userName?.touched ){
+        @if(userName?.errors?.['required']){
         <p data-testid="userName-required">username is required</p>
         } }
         <div formGroupName="passwords">
-          @let passwordsForm = form.get('passwords');
+          @let passwordsForm = form.controls['passwords'];
           <label class="input input-bordered flex items-center gap-2">
             <!-- <svg-icon src="assets/icons/password.svg"></svg-icon> -->
             <input
@@ -48,10 +48,10 @@
               formControlName="password"
               data-testId="password" />
           </label>
-          @let password = passwordsForm?.get('password'); @if(password && password.invalid &&
+          @let password = passwordsForm.controls['password']; @if(password && password.invalid &&
           password.touched){
           <p>{{ password.errors | passwordsErrors }}</p>
-          } @let confirmPassword = passwordsForm?.get('confirmPassword');
+          } @let confirmPassword = passwordsForm.controls['confirmPassword'];
 
           <label class="input input-bordered flex items-center gap-2">
             <!-- <svg-icon src="assets/icons/password.svg"></svg-icon> -->
@@ -62,7 +62,7 @@
               data-testId="confirmPassword"
               formControlName="confirmPassword" />
           </label>
-          @if(passwordsForm?.hasError('passwordMatch') && password?.touched &&
+          @if(passwordsForm.errors?.['passwordMatch'] && password?.touched &&
           confirmPassword?.touched){
           <p>passwords should match</p>
           }
